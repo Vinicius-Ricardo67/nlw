@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header>
+    <img src="./assets/logo.png" alt="logo esports nlw"> 
+  </header>
+  
+  <main>
+    <section>
+      <div>
+        <h2>Assistente de meta</h2>
+        <p>Pergunte sobre estratégias, builds e dicas para seus jogos!</p>
+      
+        <form id="form">
+          <input id="apiKey" type="password" placeholder="informe a API KEY do Gemini" required>
+
+          <select id="gameSelect">
+            <option value="">Selecione um jogo</option>
+            <option value="TBOI">The binding of Issac</option>
+            <option value="Terraria">Terraria</option>
+            <option value="FNTD">FNTD</option>
+            <option value="Brawl Stars">Brawl Stars</option>
+            <option value="Minecraft Dungeons">Minecraft Dungeons</option>
+          </select>
+
+          <input id="questionInput" type="text" id="pergunta" placeholder="Ex: Melhor ..." required>
+
+          <button id="askButton">
+            Perguntar
+          </button>
+        </form>
+
+        </div>
+      </div>
+    </section>
+  </main>
+      <div id="aiResponse" class="hidden">
+        <div class="response-content"></div>
+      </div>
+
+<script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+<script src="./script.js"></script>
+</body>
+
+
+</html>
