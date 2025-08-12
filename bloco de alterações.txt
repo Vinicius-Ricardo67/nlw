@@ -1,0 +1,850 @@
+v2.0
+
+Html:
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assistente de Meta</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header>
+    <img src="./assets/logo.png" alt="Logo eSports NLW"> 
+  </header>
+  
+  <main>
+    <section>
+      <div>
+        <h2>Assistente de meta</h2>
+        <p>Pergunte sobre estratégias, builds e dicas para seus jogos!</p>
+      
+        <form id="form">
+          <label for="gameSelect">🎮 Selecione um jogo</label>
+          <select id="gameSelect" required>
+            <option value="">Escolha um jogo</option>
+            <option value="TBOI">The Binding of Isaac</option>
+            <option value="Terraria">Terraria</option>
+            <option value="FNTD">FNTD</option>
+            <option value="Brawl Stars">Brawl Stars</option>
+            <option value="Minecraft Dungeons">Minecraft Dungeons</option>
+          </select>
+
+          <label for="questionInput">💬 Escreva sua pergunta</label>
+          <input id="questionInput" type="text" placeholder="Ex: Melhor build para..." required>
+
+          <button id="askButton" type="submit">Perguntar</button>
+          <div id="spinner" class="spinner hidden"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <div id="aiResponse" class="hidden">
+    <div class="response-header">
+      <img id="gameIcon" src="" alt="Ícone do jogo">
+      <span id="gameName"></span>
+    </div>
+    <div class="response-content"></div>
+  </div>
+
+  <div id="apiSection" class="hidden">
+    <label for="apiKeyDisplay">🔐 Configurações avançadas</label>
+    <input type="text" id="apiKeyDisplay" readonly value="AIzaSyDvRhQgbYGpcpi_1cZcDvep7u8AJFCgZN4"/>
+    <hr>
+    <label for="themeToggle">🌗 Alternar tema</label>
+    <select id="themeToggle">
+      <option value="auto">Automático</option>
+      <option value="light">Claro</option>
+      <option value="dark">Escuro</option>
+    </select>
+  </div>
+
+  <div style="margin: 20px 0; text-align: center;">
+    <button id="mostrarConfigAvancadas">Mostrar configurações avançadas ⚙</button>
+  </div>
+
+  <script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+  <script src="./script.js"></script>
+</body>
+</html>
+
+CSS:
+:root {
+  --primary-color: #43e7ad;
+  --secondary-color: #9572fc;
+  --background-dark: #121214;
+  --form-bg: #1f1f28;
+  --input-bg: #1a1a24;
+  --border-color: #9147ff;
+}
+
+body {
+  background-image: url("./assets/bg.jpg");
+  background-repeat: no-repeat;
+  background-size: 100% auto;
+  background-position: top center;
+  background-color: #121214;
+  color: rgb(255, 255, 255);
+  transition: background 0.3s ease;
+}
+
+body *,
+:root {
+  font-family: "inter";
+  line-height: 160%;
+}
+
+h2 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+}
+
+p {
+  font-size: clamp(1rem, 4vw, 1.8rem);
+}
+
+header {
+  padding-top: 32px;
+  text-align: center;
+}
+
+header img {
+  width: 15rem;
+}
+
+main {
+  max-width: 36rem;
+  width: 90%;
+  margin: 3rem auto;
+}
+
+section {
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  padding-top: 2px;
+  transition: all 0.3s ease-in-out;
+  background-image: linear-gradient(245deg, #312af5 0%, #4a72f6 50%, #47c1f9 100%);
+  border-radius: 0.6rem;
+  padding-top: 4px;
+}
+
+section > div {
+  padding: 2rem;
+  padding-top: 1.5rem;
+  border-radius: 1rem;
+  background-color: #282836;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+section h2 {
+  letter-spacing: -0.47px;
+}
+
+section p {
+  letter-spacing: -0.18;
+  color: #a1a1aa;
+}
+
+main section {
+  opacity: 1;
+  transform: translateY(2rem);
+  animation-name: appear;
+  animation-duration: 700ms;
+  animation-fill-mode: forwards;
+}
+
+@keyframes appear {
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+form { 
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+  margin: 1.25rem 0;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--game-color);
+  background-color: #242231;
+}
+
+input {
+  flex: 1;
+}
+
+button {
+  width: 100%;
+  border: 0;
+  background-image: linear-gradient(245deg, #312af5 0%, #4a72f6 50%, #47c1f9 100%);
+  padding: 0.675rem;
+  border-radius: 0.5rem;
+  font-weight: thin;
+  text-transform: uppercase;
+  letter-spacing: 0.12px;
+  transition: all 0.3s;
+}
+
+button:hover {
+  cursor: pointer;
+  transform: translateY(-2px);
+  box-shadow: 6px 1rem rgba(44, 127, 222, 0.501);
+}
+
+input::placeholder {
+  -webkit-text-fill-color: rgb(169, 164, 164);
+}
+
+button:disabled {
+  transition: initial;
+  transform: initial;
+  box-shadow: initial;
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: black;
+}
+
+.loading {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+#aiResponse {
+  max-width: 75rem;
+  width: 95%;
+  margin: 40px auto 0 auto;
+  background-color: #2a2634;
+  padding: 10px 20px;
+  border-left: 4px solid #6147d4;
+  border-radius: 0.5rem;
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: justify;
+}
+
+#aiResponse p {
+  color: rgb(255, 255, 255);
+  font-size: 24px;
+}
+
+#aiResponse ul {
+  padding-left: 1.3rem;
+  opacity: 0.9;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.response-content {
+  font-size: 1.125rem;
+  line-height: 1;
+  white-space: pre-wrap;
+  letter-spacing: 0.12px;
+}
+
+.hidden {
+  display: none;
+}
+
+#aiResponse a {
+    color: var(--accent-color);
+    text-shadow: 
+    0 0 3px var(--accent-color),
+    0 0 5px var(--accent-color);
+}
+
+@keyframes neonPulse {
+    from {
+        text-shadow: 
+        0 0 5px var(--accent-color),
+        0 0 10px var(--accent-color),
+        0 0 20px var(--accent-color),
+        0 0 40px var(--accent-color);
+    }
+    to {
+        text-shadow: 
+        0 0 10px var(--accent-color)
+        0 0 20px var(--accent-color)
+        0 0 40px var(--accent-color)
+        0 0 80px var(--accent-color);
+    }
+}
+
+#aiResponse a:hover {
+  color: rgba(44, 127, 222);
+  text-shadow: 0 0 6px rgba(44, 127, 222, 0.501);
+  cursor: pointer;
+  text-decoration: hidden;
+
+}
+
+#aiResponse a::after {
+  content: ' 🔗 ';
+  font-size: 0.9rem;
+}
+
+body.terraria-theme {
+  background-color: #143d24;
+}
+
+body.terraria-theme #aiResponse {
+  border-left-color: #66ff9a;
+}
+
+body.terraria-theme button {
+  background-image: linear-gradient(245deg, #66ff9a, #43e7ad);
+}
+
+body.minecraft-theme {
+  background-color: #1f2e1d;
+}
+
+body.minecraft-theme #aiResponse {
+  border-left-color: #94e185;
+}
+
+body.minecraft-theme button {
+  background-image: linear-gradient(245deg, #94e185, #61e064);
+}
+
+body.tboi-theme {
+  background-color: #2b1e1e;
+}
+
+body.tboi-theme #aiResponse {
+  border-left-color: #ff9191;
+}
+
+body.tboi-theme button {
+  background-image: linear-gradient(245deg, #ff9191, #ffcd91);
+}
+
+body.fntd-theme {
+  background-color: #1f1e30;
+}
+
+body.fntd-theme #aiResponse {
+  border-left-color: #8269fa;
+}
+
+body.fntd-theme button {
+  background-image: linear-gradient(245deg, #8269fa, #6dc2f7);
+}
+
+body.brawl-theme {
+  background-color: #20263b;
+}
+
+body.brawl-theme #aiResponse {
+  border-left-color: #ffdf4a;
+}
+
+body.brawl-theme button {
+  background-image: linear-gradient(245deg, #ffdf4a, #ff9f1a);
+}
+
+.intro-block h2 {
+    font-size: 3rem;
+    color: #fff;
+    text-shadow: 
+        0 0 5px var(--accent-color)
+        0 0 10px var(--accent-color)
+        0 0 20px var(--accent-color)
+        0 0 40px var(--accent-color);
+    animation: neonPulse 2s infinite alternate;
+}
+
+.intro-block p {
+    font-size:1.3rem;
+    color: #ccc;
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+}
+
+.ask-block button {
+    box-shadow: 0 0 10px var(--accent-color);
+}
+
+.ask-block button:hover {
+    box-shadow: 0 0 20px var(--accent-color);
+}
+
+mark a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: bold;
+    transition: text-decoretion 0.3s ease, color 0.3 ease;
+}
+
+mark a:hover {
+    text-decoration: underline;
+    color: var(--accent-color);
+}
+
+.spinner {
+  border: 4px solid #ccc;
+  border-top: 4px solid #43e7ad;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  animation: spin 1s linear infinite;
+  margin: 10px auto 0 auto;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media (max-width: 500px) {
+  main {
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  input, select, button {
+    width: 100%;
+    font-size: 1rem;
+  }
+
+  label {
+    font-size: 0.95rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  p {
+    font-size: 1.1rem;
+  }
+
+  #aiResponse {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  #aiResponse p {
+    font-size: 1.1rem;
+  }
+
+  .intro-block h2 {
+    font-size: 2.5rem;
+  }
+
+  .intro-block p {
+    font-size: 1.1rem;
+  }
+
+  .response-header {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #gameIcon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 8px;
+  }
+
+  #gameName {
+    font-size: 1rem;
+    text-align: center;
+  }
+}
+
+body.light-mode {
+  background-image: url("assets/bgClaro.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+body.light-mode section {
+  background-color: #fff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+  color:#000;
+}
+
+body.light-mode section > div {
+  background-color: #f9f9f9;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+body.light-mode input,
+body.light-mode {
+  background-color: #fff;
+  color: #000;
+  border-color: #ccc;
+}
+
+body.light-mode input::placeholder {
+  -webkit-text-fill-color: #888;
+}
+
+body.light-mode button,
+body.light-mode .gradient-button {
+  background-color: #312af5 0%, #4a72f6 50%, #47c1f9 100%;
+  color: #000;
+  border: 1px solid #ccc;
+  transition: 0.3s ease;
+}
+
+body.light-mode button:hover {
+  background-color: #d5d5d5;
+}
+
+body.light-mode #aiResponse {
+  background-color: #fefefe;
+  border-left-color: 2px solid var(--game-color);
+  color: #111;
+}
+
+body.light-mode #aiResponse p,
+body.light-mode #aiResponse ul{
+  color: #333;
+}
+
+body.light-mode mark a {
+  color: #0056b3;
+  text-shadow: none;
+}
+
+body.light-mode .intro-block h2 {
+  color: #000;
+  text-shadow: none;
+}
+
+body.light-mode .intro-block p {
+  color: #333;
+  text-shadow: none;
+}
+
+body.light-mode select {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+body.light-mode .select-wrapper select {
+  background-color: #fff !important;
+  color: #000 !important;
+}
+
+body.light-mode label,
+body.light-mode .advanced-config-label {
+  color: #000;
+}
+
+body.light-mode input,
+body.light-mode select,
+body.light-mode textarea {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #ccc;
+}
+
+.main-container {
+  background-color: #1e1e2f;
+  border-radius: 12px;
+  padding: 30px;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.main-container::before {
+  all: unset;
+  border: 2px solid var(--game-color);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  background-color: #1f1d2d;
+  color: #fff;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+input, select {
+  all: unset;
+  border: 2px solid var(--game-color);
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  background-color: #1f1d2d;
+  color: #fff;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+button {
+  background: linear-gradient(90deg, #312af5 0%, #4a72f6 50%, #47c1f9 100%);
+  border: none;
+  border-radius: 6px;
+  padding: 12px 20px;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3 ease;
+}
+
+JavaScript:
+const gameSelect = document.getElementById('gameSelect');
+const questionInput = document.getElementById('questionInput');
+const askButton = document.getElementById("askButton");
+const form = document.getElementById('form');
+const aiResponse = document.getElementById('aiResponse');
+const responseContent = aiResponse.querySelector('.response-content');
+const spinner = document.getElementById('spinner');
+const themeToggle = document.getElementById('themeToggle');
+const btnToggleConfig = document.getElementById("mostrarConfigAvancadas");
+const apiSection = document.getElementById("apiSection");
+const copiarApiKeyBtn = document.getElementById("copiarApiKeyBtn");
+const apiKeyDisplay = document.getElementById("apiKeyDisplay");
+const gameIcon = document.getElementById('gameIcon');
+const gameNameLabel = document.getElementById('gameName');
+
+const apiKey = "AIzaSyDvRhQgbYGpcpi_1cZcDvep7u8AJFCgZN4";
+
+function exibirResposta(texto) {
+    responseContent.textContent = texto;
+    aiResponse.classList.remove('hidden');
+}
+
+const markdownToHTML = (text) => {
+    const converter = new showdown.Converter();
+    return converter.makeHtml(text);
+}
+
+const perguntarAI = async (question, game) => {
+    const model = "gemini-2.5-flash";
+    const baseURL = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+    const pergunta = `
+## Especialidade
+    Você é um assistente especialista de meta do jogo ${game}.
+
+    ## Tarefa
+    Você deve responder as perguntas do usuário com base no seu conhecimento do jogo para criar estratégias, builds e dicas.
+
+    ## Regras
+    - Se você não sabe a resposta, responda com 'Não sei' e não tente inventar uma resposta.
+    - Se a pergunta não está relacionada ao jogo, avise o usuário e não responda a pergunta.
+    - Considere a data atual ${new Date().toLocaleDateString()}.
+    - Faça pesquisas atualizadas sobre o patch atual, baseado na data atual, para dar uma resposta coerente para o usuário.
+    - Faça pesquisas sobre a versão do jogo, e avise o usuário sobre qual versão você está falando. 
+
+    ## Resposta
+    - Não precisa economizar na resposta, foque em responder de maneira explicativa e abrangente a pergunta do usuário.
+    - Responda em markdown e se possível em tópicos.
+    - Não faça nenhuma saudação ou despedida, apenas responda a pergunta do usuário e não desvie do assunto.
+    - Ao formatar as palavras-chave, use links específicos para o jogo correto no fandom.  
+      Por exemplo, para o jogo ${game}, se mencionar "Queen Bee", o link deve ser:  
+      [Queen Bee](https://${game.toLowerCase().replace(/\s/g,'')}.fandom.com/wiki/Queen_Bee)  
+    - Só transforme em link as palavras-chave que fazem parte do vocabulário importante do jogo (exemplo para Terraria: Queen Bee, Poções, Armaduras, Arena, etc).  
+    - Use o nome exato do termo para construir o link, trocando espaços por underline (_) no URL.  
+    - Não linke outras palavras que não são termos do jogo.
+
+    ## Exemplo de resposta
+
+    O usuário fará sua pergunta pelo ${question}.
+
+    pergunta do usuário: ${question}.
+
+    Exemplo de resposta: Na versão 1.4.4.9 de terraria, a (resposta da pergunta) é...(as reticências foram utilizadas apenas para indicar que a resposta continuaria, nunca utilize ela, sempre dê uma resposta completa).
+    `;
+
+    const contents = [{ role: "user", parts: [{ text: pergunta }] }];
+    const tools = [{ google_search: {} }];
+
+    const response = await fetch(baseURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents, tools })
+    });
+
+    const data = await response.json();
+    console.log({ data });
+
+    return data.candidates[0].content.parts[0].text;
+};
+
+const enviarFormulario = async (evento) => {
+    evento.preventDefault();
+
+    const game = gameSelect.value;
+    const question = questionInput.value;
+
+    if (!question || !game) {
+        alert('Por favor, selecione o jogo e escreva sua pergunta');
+        return;
+    }
+
+    aplicarTemaDoJogo(game);
+
+    askButton.disabled = true;
+    askButton.classList.add('hidden');
+    spinner.classList.remove('hidden');
+
+    try {
+        const text = await perguntarAI(question, game);
+        const rawHTML = markdownToHTML(text);
+        responseContent.innerHTML = rawHTML;
+        aiResponse.classList.remove('hidden');
+    } catch (error) {
+        console.error("Erro: ", error);
+        alert("Ocorreu um erro. Verifique a chave ou tente novamente.");
+    } finally {
+        askButton.disabled = false;
+        askButton.classList.remove('hidden');
+        spinner.classList.add('hidden');
+    }
+};
+
+function aplicarTemaSalvo() {
+    const temaSalvo = localStorage.getItem("tema") || "auto";
+
+    if (temaSalvo === "light") {
+        document.body.classList.remove("dark-mode");
+        document.body.classList.add("light-mode");
+    } else if (temaSalvo === "dark") {
+        document.body.classList.remove("light-mode");
+        document.body.classList.add("dark-mode");
+    } else {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.body.classList.toggle("light-mode", !prefersDark);
+    }
+
+    themeToggle.value = temaSalvo;
+}
+
+themeToggle.addEventListener("change", () => {
+    const temaEscolhido = themeToggle.value;
+    localStorage.setItem("tema", temaEscolhido);
+    aplicarTemaSalvo();
+});
+
+function aplicarTemaDoJogo(jogoSelecionado) {
+    const body = document.body;
+    body.className = body.className
+        .split(' ')
+        .filter(c => !c.endsWith('-theme'))
+        .join(' ');
+
+    switch (jogoSelecionado.toLowerCase()) {
+        case 'terraria':
+            body.classList.add('terraria-theme');
+            break;
+        case 'minecraft dungeons':
+            body.classList.add('minecraft-theme');
+            break;
+        case 'tboi':
+        case 'the binding of issac':
+            body.classList.add('tboi-theme');
+            break;
+        case 'fntd':
+            body.classList.add('fntd-theme');
+            break;
+        case 'brawl stars':
+            body.classList.add('brawl-theme');
+            break;
+    }
+}
+
+const iconesJogos = {
+    terraria: './assets/icons/terraria.png',
+    'minecraft dungeons': './assets/icons/minecraft.png',
+    tboi: './assets/icons/tboi.png',
+    fntd: './assets/icons/fntd.png',
+    'brawl stars': './assets/icons/brawlstars.png'
+};
+
+function atualizarResposta(jogo, texto) {
+    aiResponse.classList.remove('hidden');
+    gameNameLabel.textContent = jogo;
+    const key = jogo.toLowerCase();
+    gameIcon.src = iconesJogos[key] || './assets/icons/default.png';
+    gameIcon.alt = `Ícone do jogo ${jogo}`;
+    responseContent.innerHTML = markdownToHTML(texto);
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    aplicarTemaSalvo();
+
+    if (btnToggleConfig && apiSection) {
+        btnToggleConfig.addEventListener("click", () => {
+            apiSection.classList.toggle("hidden");
+            btnToggleConfig.textContent = apiSection.classList.contains("hidden")
+                ? "Mostrar configurações avançadas ⚙"
+                : "Esconder configurações avançadas ⚙";
+        });
+    }
+
+    if (copiarApiKeyBtn && apiKeyDisplay) {
+        copiarApiKeyBtn.addEventListener("click", () => {
+            apiKeyDisplay.select();
+            apiKeyDisplay.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(apiKeyDisplay.value)
+                .then(() => alert("API Key copiada!"))
+                .catch(() => alert("Erro ao copiar API Key"));
+        });
+    }
+
+    gameSelect.addEventListener('change', (e) => {
+        aplicarTemaDoJogo(e.target.value);
+    });
+
+    form.addEventListener("submit", enviarFormulario);
+});
+
+const gameColors = {
+    "Terraria": "#4CAF50",
+    "TBOI": "#8b0000",
+    "FNTD": "#FFD700",
+    "Brawl Stars": "#FF4500",
+    "Minecraft Dungeons": "#8B4513"
+};
+
+const selectJogo = document.querySelector("#gameSelect");
+const input = document.querySelectorAll("#gameSelect, #questionInput");
+const container = document.querySelector("main section div");
+
+function atualizarCor() {
+    const jogoSelecionado = selectJogo.value;
+    const cor = coresJogos[jogoSelecionado] || "var(--game-color)"
+
+    input.forEach(input => {
+        input.style.borderColor = cor;
+        input.style.boxShadow = `0 0 5px ${cor}`;
+    });
+
+    container.style.borderTop = `4px solid ${cor}`;
+    container.style.boxShadow = `0 -4px 15px ${cor}`;
+    container.style.borderImage = `linear-gradient(90deg, ${cor}, #fff)`;
+    container.style.borderImageSlice = 1;
+}
+
+selectJogo.addEventListener("change", atualizarCor);
+
+document.addEventListener("DOMContentLoaded", atualizarCor);

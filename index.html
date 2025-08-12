@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assistente de Meta</title>
 
-   <link rel="preconnect" href="https://fonts.googleapis.com">
-   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-   <link href="https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bitcount+Grid+Double:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet">
 
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
   <header>
-    <img src="./assets/logo.png" alt="logo esports nlw"> 
+    <img src="./assets/logo.png" alt="Logo eSports NLW"> 
   </header>
   
   <main>
@@ -24,35 +23,51 @@
         <p>Pergunte sobre estratégias, builds e dicas para seus jogos!</p>
       
         <form id="form">
-          <input id="apiKey" type="password" placeholder="informe a API KEY do Gemini" required>
-
-          <select id="gameSelect">
-            <option value="">Selecione um jogo</option>
-            <option value="TBOI">The binding of Issac</option>
+          <label for="gameSelect">🎮 Selecione um jogo</label>
+          <select id="gameSelect" required>
+            <option value="">Escolha um jogo</option>
+            <option value="TBOI">The Binding of Isaac</option>
             <option value="Terraria">Terraria</option>
             <option value="FNTD">FNTD</option>
             <option value="Brawl Stars">Brawl Stars</option>
             <option value="Minecraft Dungeons">Minecraft Dungeons</option>
           </select>
 
-          <input id="questionInput" type="text" id="pergunta" placeholder="Ex: Melhor ..." required>
+          <label for="questionInput">💬 Escreva sua pergunta</label>
+          <input id="questionInput" type="text" placeholder="Ex: Melhor build para..." required>
 
-          <button id="askButton">
-            Perguntar
-          </button>
+          <button id="askButton" type="submit">Perguntar</button>
+          <div id="spinner" class="spinner hidden"></div>
         </form>
-
-        </div>
       </div>
     </section>
   </main>
-      <div id="aiResponse" class="hidden">
-        <div class="response-content"></div>
-      </div>
 
-<script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
-<script src="./script.js"></script>
+  <div id="aiResponse" class="hidden">
+    <div class="response-header">
+      <img id="gameIcon" src="" alt="Ícone do jogo">
+      <span id="gameName"></span>
+    </div>
+    <div class="response-content"></div>
+  </div>
+
+  <div id="apiSection" class="hidden">
+    <label for="apiKeyDisplay">🔐 Configurações avançadas</label>
+    <input type="text" id="apiKeyDisplay" readonly value="AIzaSyDvRhQgbYGpcpi_1cZcDvep7u8AJFCgZN4"/>
+    <hr>
+    <label for="themeToggle">🌗 Alternar tema</label>
+    <select id="themeToggle">
+      <option value="auto">Automático</option>
+      <option value="light">Claro</option>
+      <option value="dark">Escuro</option>
+    </select>
+  </div>
+
+  <div style="margin: 20px 0; text-align: center;">
+    <button id="mostrarConfigAvancadas">Mostrar configurações avançadas ⚙</button>
+  </div>
+
+  <script src="https://unpkg.com/showdown/dist/showdown.min.js"></script>
+  <script src="./script.js"></script>
 </body>
-
-
 </html>
